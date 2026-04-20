@@ -6,13 +6,15 @@ import LoginModal from "../components/LoginModal";
 function Home() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useUser(); // 🔥 Clerk user
+  const { user, isLoaded } = useUser(); // 🔥 important
 
   const handleGetStarted = () => {
+    if (!isLoaded) return; // Clerk loading fix
+
     if (user) {
-      navigate("/dashboard"); // already logged in
+      navigate("/dashboard");
     } else {
-      setOpen(true); // open login modal
+      setOpen(true);
     }
   };
 
@@ -44,7 +46,7 @@ function Home() {
             onClick={handleGetStarted}
             className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-8 py-3 rounded-full shadow-lg hover:scale-105 transition"
           >
-            Get started →
+            {user ? "Go to dashboard →" : "Get started →"}
           </button>
 
           <button

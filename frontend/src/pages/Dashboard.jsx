@@ -2,17 +2,25 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 
+const API = "https://dbms-final-project-q07u.onrender.com";
+
 function Dashboard() {
   const navigate = useNavigate();
   const { user } = useUser();
 
   const [circles, setCircles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // 🔥 LOAD CIRCLES FROM BACKEND
   useEffect(() => {
-    fetch("http://localhost:5000/api/circles")
+    fetch(`${API}/api/circles`)
       .then(res => res.json())
-      .then(data => setCircles(data));
+      .then(data => setCircles(data))
+      .catch(err => {
+        console.error(err);
+        alert("Failed to load circles");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -48,7 +56,9 @@ function Dashboard() {
         {/* GRID */}
         <div className="grid md:grid-cols-3 gap-8">
 
-          {circles.length === 0 ? (
+          {loading ? (
+            <p className="text-gray-500">Loading circles...</p>
+          ) : circles.length === 0 ? (
             <p className="text-gray-500">No circles yet</p>
           ) : (
             circles.map((c) => (

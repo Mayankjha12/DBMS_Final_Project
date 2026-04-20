@@ -2,13 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 
+const API = "https://dbms-final-project-q07u.onrender.com";
+
 function CreateCircle() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Frontend");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { user } = useUser(); // 🔥 Clerk user
+  const { user } = useUser();
 
   const createCircle = async () => {
     if (!user) {
@@ -21,23 +24,33 @@ function CreateCircle() {
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/circles", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        category,
-        clerk_id: user.id   // 🔥 CHANGE HERE
-      })
-    });
+    try {
+      setLoading(true);
 
-    if (res.ok) {
-      navigate("/dashboard");
-    } else {
-      alert("Error creating circle");
+      const res = await fetch(`${API}/api/circles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          category,
+          clerk_id: user.id
+        })
+      });
+
+      if (res.ok) {
+        navigate("/dashboard");
+      } else {
+        alert("Error creating circle");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +66,7 @@ function CreateCircle() {
           Gather a small group around something you all want to learn.
         </p>
 
+        {/* TITLE */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Title</label>
           <input
@@ -63,6 +77,7 @@ function CreateCircle() {
           />
         </div>
 
+        {/* DESCRIPTION */}
         <div className="mb-4">
           <label className="block mb-1 font-medium">Description</label>
           <textarea
@@ -74,6 +89,7 @@ function CreateCircle() {
           />
         </div>
 
+        {/* CATEGORY */}
         <div className="mb-6">
           <label className="block mb-2 font-medium">Category</label>
           <div className="flex flex-wrap gap-2">
@@ -93,6 +109,7 @@ function CreateCircle() {
           </div>
         </div>
 
+        {/* ACTIONS */}
         <div className="flex justify-between">
           <button
             onClick={() => navigate("/dashboard")}
@@ -103,9 +120,10 @@ function CreateCircle() {
 
           <button
             onClick={createCircle}
-            className="bg-purple-600 text-white px-5 py-2 rounded-xl"
+            disabled={loading}
+            className="bg-purple-600 text-white px-5 py-2 rounded-xl disabled:opacity-50"
           >
-            Create circle
+            {loading ? "Creating..." : "Create circle"}
           </button>
         </div>
 

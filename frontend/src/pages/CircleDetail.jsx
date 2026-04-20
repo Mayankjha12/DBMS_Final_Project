@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 
+const API = "https://dbms-final-project-q07u.onrender.com";
+
 function CircleDetail() {
   const { id } = useParams();
 
@@ -10,18 +12,18 @@ function CircleDetail() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
-  const { user } = useUser(); // 🔥 Clerk user
+  const { user } = useUser();
 
-  // LOAD CIRCLE
+  // 🔥 LOAD CIRCLE
   useEffect(() => {
-    fetch(`http://localhost:5000/api/circles/${id}`)
+    fetch(`${API}/api/circles/${id}`)
       .then(res => res.json())
       .then(data => setCircle(data));
   }, [id]);
 
-  // LOAD TASKS
+  // 🔥 LOAD TASKS
   const loadTasks = () => {
-    fetch(`http://localhost:5000/api/circles/${id}/tasks`)
+    fetch(`${API}/api/circles/${id}/tasks`)
       .then(res => res.json())
       .then(data => setTasks(data));
   };
@@ -30,9 +32,9 @@ function CircleDetail() {
     loadTasks();
   }, [id]);
 
-  // LOAD MESSAGES
+  // 🔥 LOAD MESSAGES
   const loadMessages = () => {
-    fetch(`http://localhost:5000/api/circles/${id}/messages`)
+    fetch(`${API}/api/circles/${id}/messages`)
       .then(res => res.json())
       .then(data => setMessages(data));
   };
@@ -41,19 +43,19 @@ function CircleDetail() {
     loadMessages();
   }, [id]);
 
-  // SEND MESSAGE
+  // 🔥 SEND MESSAGE
   const sendMessage = async () => {
     if (!user) return alert("Login required");
     if (!text.trim()) return;
 
-    await fetch(`http://localhost:5000/api/circles/${id}/messages`, {
+    await fetch(`${API}/api/circles/${id}/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         text,
-        clerk_id: user.id   // 🔥 CHANGE HERE
+        clerk_id: user.id
       })
     });
 
@@ -109,7 +111,7 @@ function CircleDetail() {
                 <div
                   key={i}
                   className={`p-2 rounded-lg max-w-[70%] ${
-                    m.user_id === m.user_id && user && m.user_id === m.user_id
+                    user && m.clerk_id === user.id
                       ? "bg-purple-500 text-white ml-auto"
                       : "bg-gray-200"
                   }`}
