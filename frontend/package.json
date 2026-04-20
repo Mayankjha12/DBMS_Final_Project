@@ -12,7 +12,8 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.61.5",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
