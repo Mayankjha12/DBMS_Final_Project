@@ -11,34 +11,48 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import LoginModal from "./components/LoginModal";
 
+// 🔥 PRODUCTION API
+const API = "https://dbms-final-project-q07u.onrender.com";
+
 function App() {
   const [showLogin, setShowLogin] = useState(false);
 
-  const { user } = useUser();  // 🔥 Clerk user
+  const { user, isLoaded } = useUser();
 
-  // 🔥 USER SYNC WITH BACKEND
+  // 🔥 SYNC USER WITH BACKEND
   useEffect(() => {
-    if (user) {
-      fetch("http://localhost:5000/api/sync-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clerkId: user.id,
-          email: user.primaryEmailAddress?.emailAddress,
-          username: user.username,
-        }),
-      });
-    }
-  }, [user]);
+    if (!isLoaded || !user) return;
+
+    const syncUser = async () => {
+      try {
+        await fetch(`${API}/api/sync-user`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            clerkId: user.id,
+            email: user.primaryEmailAddress?.emailAddress,
+            username:
+              user.username ||
+              user.firstName ||
+              "user",
+          }),
+        });
+      } catch (err) {
+        console.error("User sync failed:", err);
+      }
+    };
+
+    syncUser();
+  }, [user, isLoaded]);
 
   return (
     <BrowserRouter>
-
-      {/* Navbar */}
+      {/* 🔥 NAVBAR */}
       <Navbar setShowLogin={setShowLogin} />
 
+      {/* 🔥 ROUTES */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -47,11 +61,10 @@ function App() {
         <Route path="/profile" element={<Profile />} />
       </Routes>
 
-      {/* Login Modal */}
+      {/* 🔥 LOGIN MODAL */}
       {showLogin && (
         <LoginModal close={() => setShowLogin(false)} />
       )}
-
     </BrowserRouter>
   );
 }
