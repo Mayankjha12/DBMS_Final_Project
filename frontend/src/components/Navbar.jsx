@@ -13,15 +13,22 @@ function Navbar({ setShowLogin }) {
     navigate("/");
   };
 
+  const linkStyle = (path) =>
+    `relative hover:text-purple-600 transition ${
+      location.pathname === path
+        ? "text-purple-600 font-semibold"
+        : "text-gray-700"
+    }`;
+
   return (
-    <div className="flex justify-between items-center px-8 py-4 bg-white/70 backdrop-blur-md shadow-sm sticky top-0 z-50">
+    <div className="flex justify-between items-center px-8 py-4 bg-white/70 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-white/40">
 
       {/* LOGO */}
       <div
         className="flex items-center gap-2 cursor-pointer"
-        onClick={() => navigate(user ? "/dashboard" : "/")}
+        onClick={() => navigate("/")}
       >
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
           ✨
         </div>
         <h1 className="text-xl font-bold text-purple-600">
@@ -30,64 +37,44 @@ function Navbar({ setShowLogin }) {
       </div>
 
       {/* LINKS */}
-      <div className="flex gap-6 text-gray-700 font-medium">
+      <div className="flex gap-8 text-sm font-medium">
 
-        <Link
-          to="/dashboard"
-          className={`hover:text-purple-600 transition ${
-            location.pathname === "/dashboard"
-              ? "text-purple-600 font-semibold"
-              : ""
-          }`}
-        >
+        <Link to="/" className={linkStyle("/")}>
+          Home
+        </Link>
+
+        <Link to="/dashboard" className={linkStyle("/dashboard")}>
           Dashboard
         </Link>
 
-        <Link
-          to="/create"
-          className={`hover:text-purple-600 transition ${
-            location.pathname === "/create"
-              ? "text-purple-600 font-semibold"
-              : ""
-          }`}
-        >
+        <Link to="/create" className={linkStyle("/create")}>
           Create
         </Link>
 
-        <Link
-          to="/profile"
-          className={`hover:text-purple-600 transition ${
-            location.pathname === "/profile"
-              ? "text-purple-600 font-semibold"
-              : ""
-          }`}
-        >
+        <Link to="/profile" className={linkStyle("/profile")}>
           Profile
         </Link>
 
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT */}
       <div className="flex items-center gap-3">
 
         {!isLoaded ? null : user ? (
           <>
-            {/* AVATAR */}
-            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white w-9 h-9 flex items-center justify-center rounded-full font-bold">
-              {user.firstName?.[0] ||
-                user.username?.[0] ||
-                "U"}
-            </div>
+            <img
+              src={user.imageUrl}
+              alt="avatar"
+              className="w-9 h-9 rounded-full"
+            />
 
-            {/* NAME */}
             <span className="font-medium">
-              {user.firstName || user.username || "User"}
+              {user.firstName || "User"}
             </span>
 
-            {/* LOGOUT */}
             <button
               onClick={logout}
-              className="bg-purple-600 text-white px-3 py-1 rounded-lg hover:bg-purple-700 transition"
+              className="bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition"
             >
               Logout
             </button>
@@ -102,7 +89,6 @@ function Navbar({ setShowLogin }) {
         )}
 
       </div>
-
     </div>
   );
 }
